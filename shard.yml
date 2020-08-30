@@ -1,0 +1,14 @@
+name: glassy-mongodb-odm
+version: 0.1.0
+
+authors:
+  - Anderson Danilo <contato@andersondanilo.com>
+
+dependencies:
+  mongo:
+    github: kimvex/mongodb-crystal
+    branch: master
+
+crystal: 0.35.1
+
+license: MIT
