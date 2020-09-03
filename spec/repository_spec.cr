@@ -1,98 +1,7 @@
 require "mongo"
 require "./spec_helper"
 require "./fixtures/collection"
-
-alias ODM = Glassy::MongoODM::Annotations
-
-module Entity
-  @[ODM::Document]
-  class User
-    @[ODM::Id]
-    property id : BSON::ObjectId?
-
-    @[ODM::Field(name: "Name")]
-    property name : String?
-
-    @[ODM::Field]
-    property always_null : Int32?
-
-    @[ODM::Field]
-    property birth_date : Time?
-
-    @[ODM::Field]
-    property mother : Mother?
-
-    @[ODM::Field]
-    property phones : Array(String) = [] of String
-
-    @[ODM::Field]
-    property identities : Array(Identity)?
-
-    @[ODM::Document]
-    class Mother
-      @[ODM::Field]
-      property name : String?
-    end
-  end
-end
-
-@[ODM::Document]
-class Identity
-  @[ODM::Id]
-  property id : BSON::ObjectId?
-
-  @[ODM::Field]
-  property type : IdentityType?
-
-  @[ODM::Field]
-  property number : Int32?
-
-  enum IdentityType
-    Id
-    Passport
-  end
-end
-
-@[ODM::Document]
-class RequiredEntity
-  @[ODM::Id]
-  property id : BSON::ObjectId
-
-  @[ODM::Field]
-  property type : Identity::IdentityType
-
-  @[ODM::Field]
-  property name : String
-
-  @[ODM::Field]
-  property has_child : Bool
-
-  @[ODM::Field]
-  property number : Int32
-
-  @[ODM::Field]
-  property price : Float64
-
-  @[ODM::Field]
-  property birth_date : Time
-
-  @[ODM::Field]
-  property numbers : Array(Int32)
-
-  @[ODM::Initialize]
-  def initialize(@type, @name, @has_child, @number, @price, @birth_date, @numbers)
-    @id = BSON::ObjectId.new
-  end
-end
-
-class UserRepository < Glassy::MongoODM::Repository(Entity::User)
-end
-
-class IdentityRepository < Glassy::MongoODM::Repository(Identity)
-end
-
-class RequiredEntityRepository < Glassy::MongoODM::Repository(RequiredEntity)
-end
+require "./fixtures/repository_classes"
 
 describe Glassy::MongoODM::Repository do
   it "to_bson" do
@@ -209,6 +118,30 @@ describe Glassy::MongoODM::Repository do
     entity.price.should eq 0.0
     entity.birth_date.should eq Time.unix(0)
     entity.numbers.should eq [] of Int32
+    entity.enabled.should be_true
+
+    entity = repository.from_bson({"enabled" => false}.to_bson)
+    entity.enabled.should be_false
+  end
+
+  it "from_bson with nillable and false value" do
+    connection = make_connection()
+    repository = NillableEntityRepository.new(connection)
+
+    entity = repository.from_bson({"enabled" => false}.to_bson)
+
+    entity.id.should_not be_nil
+    entity.enabled.should eq false
+
+    entity = repository.from_bson({"enabled" => nil}.to_bson)
+
+    entity.id.should_not be_nil
+    entity.enabled.should be_nil
+
+    entity = repository.from_bson({"have" => "nothing"}.to_bson)
+
+    entity.id.should_not be_nil
+    entity.enabled.should be_true
   end
 
   it "insert document & find by id" do

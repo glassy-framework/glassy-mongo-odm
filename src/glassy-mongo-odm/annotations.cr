@@ -1,13 +1,15 @@
 module Glassy::MongoODM::Annotations
-  annotation Document
-  end
+  module ODM
+    annotation Document
+    end
 
-  annotation Id
-  end
+    annotation Id
+    end
 
-  annotation Field
-  end
+    annotation Field
+    end
 
-  annotation Initialize
+    annotation Initialize
+    end
   end
 end

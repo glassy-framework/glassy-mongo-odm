@@ -8,7 +8,7 @@ require "mongo"
 
 module Glassy::MongoODM
   abstract class Repository(EntityClass)
-    include Glassy::MongoODM::Annotations
+    include Glassy::MongoODM::Annotations::ODM
 
     abstract def to_bson(entity : EntityClass) : BSON
     abstract def from_bson(bson : BSON) : EntityClass
@@ -213,11 +213,15 @@ module Glassy::MongoODM
               {% id_ann = ivar.annotation(Id) %}
               {% if id_ann %}
                 {{ns}}id_default = {{ivar.default_value || "nil".id}}
+                {{ns}}id_accept_nil = false
+                {{ns}}id_preffer_nil = false
                 {% if ivar.type.union_types.any? { |t| t.name =~ /^Nil$/ } %}
                   {{ns}}id_default ||= BSON::ObjectId.new
+                  {{ns}}id_accept_nil = true
                 {% end %}
                 begin
                   {{ns}}{{ivar.name}}_value = bson["_id"].as(BSON::ObjectId)
+                  {{ns}}id_preffer_nil = {{ns}}id_accept_nil
                 rescue IndexError
                   {{ns}}{{ivar.name}}_value = nil
                   if required_nil_defaults
@@ -232,9 +236,13 @@ module Glassy::MongoODM
                 {% field_name = field_ann[:name] ? field_ann[:name].id : ivar.name %}
                 begin
                   {{ns}}{{ivar.name}}_default = {{ivar.default_value || "nil".id}}
+                  {{ns}}{{ivar.name}}_accept_nil = false
+                  {{ns}}{{ivar.name}}_preffer_nil = false
 
-                  {% unless ivar.type.union_types.any? { |t| t.name =~ /^Nil$/ } %}
-                    if required_nil_defaults
+                  {% if ivar.type.union_types.any? { |t| t.name =~ /^Nil$/ } %}
+                    {{ns}}{{ivar.name}}_accept_nil = true
+                  {% else %}
+                    if required_nil_defaults && {{ns}}{{ivar.name}}_default.nil?
                       {% if ivar.type.union_types.any? { |t| t.name =~ /^String$/ } %}
                         {{ns}}{{ivar.name}}_default = ""
                       {% elsif ivar.type.union_types.any? { |t| t.name =~ /^Int/ } %}
@@ -296,6 +304,7 @@ module Glassy::MongoODM
                       {% end %}
                     {% end %}
                   {% end %}
+                  {{ns}}{{ivar.name}}_preffer_nil = {{ns}}{{ivar.name}}_accept_nil
                 rescue IndexError
                   {{ns}}{{ivar.name}}_value = {{ns}}{{ivar.name}}_default
                 end
@@ -311,7 +320,7 @@ module Glassy::MongoODM
                   {% unless type_map[arg.name].union_types.any? { |t| t.name =~ /^Nil$/ } %}
                     {% suffix = ".not_nil!" %}
                   {% end %}
-                  {% init_arg_field_value = "(#{ns}#{arg.name}_value || #{arg.default_value || "nil".id} || #{ns}#{arg.name}_default)" %}
+                  {% init_arg_field_value = "(#{ns}#{arg.name}_value.nil? ? (#{arg.default_value || "nil".id}.nil? ? #{ns}#{arg.name}_default : #{arg.default_value || "nil".id}) : #{ns}#{arg.name}_value)" %}
                   {% init_arg_fields << "#{arg.name.id}: #{init_arg_field_value.id}#{suffix.id}" %}
                   {% init_arg_names << arg.name %}
                   {% unless type_map[arg.name].union_types.any? { |t| t.name =~ /^Nil$/ } %}
@@ -339,7 +348,7 @@ module Glassy::MongoODM
                       raise Glassy::MongoODM::Exceptions::NoDefaultValue.new("No default value for arg {{ivar.name.id}}")
                     end
                   {% end %}
-                  %entity.{{ivar.name}} = ({{ns}}{{ivar.name}}_value || {{ns}}{{ivar.name}}_default){{suffix.id}}
+                  %entity.{{ivar.name}} = ({{ns}}{{ivar.name}}_value.nil? && !{{ns}}{{ivar.name}}_preffer_nil ? {{ns}}{{ivar.name}}_default : {{ns}}{{ivar.name}}_value){{suffix.id}}
                 {% end %}
               {% end %}
             {% end %}
