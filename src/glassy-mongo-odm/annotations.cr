@@ -7,4 +7,7 @@ module Glassy::MongoODM::Annotations
 
   annotation Field
   end
+
+  annotation Initialize
+  end
 end
