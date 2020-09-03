@@ -1,6 +1,6 @@
 # glassy-mongo-odm
 
-MongoDB ODM for Crystal
+Mongo ODM (Object Document Mapper) with repositories for crystal lang
 
 ## Installation
 
@@ -18,13 +18,49 @@ MongoDB ODM for Crystal
 
 ```crystal
 require "glassy-mongo-odm"
-```
 
-TODO: Write usage instructions here
+include Glassy::MongoODM::Annotations
+
+@[ODM::Document]
+class User
+  @[ODM::Id]
+  property id : BSON::ObjectId?
+
+  @[ODM::Field(name: "Name")]
+  property name : String
+
+  @[ODM::Field]
+  property birth_date : Time
+
+  @[ODM::Field]
+  property mother : Mother?
+
+  @[ODM::Document]
+  class Mother
+    @[ODM::Field]
+    property name : String?
+  end
+
+  def initialize(@name, @birth_date)
+  end
+end
+
+class UserRepository < Glassy::MongoODM::Repository(User)
+end
+
+conn = Glassy::MongoODM::Connection.new("mongodb://mongo", db_name)
+
+repository = UserRepository.new(conn)
+
+user = User.new(name: "My Name", birth_date: Time.local)
+
+repository.save(user)
+
+```
 
 ## Development
 
-TODO: Write development instructions here
+Always run crystal spec before submiting code
 
 ## Contributing
 
@@ -36,4 +72,4 @@ TODO: Write development instructions here
 
 ## Contributors
 
-- [your-name-here](https://github.com/your-github-user) - creator and maintainer
+- [Anderson Danilo](https://github.com/andersondanilo) - creator and maintainer
