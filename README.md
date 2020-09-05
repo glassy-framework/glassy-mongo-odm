@@ -1,6 +1,6 @@
 # glassy-mongo-odm
 
-MongoDB ODM for Crystal
+Mongo ODM (Object Document Mapper) with repositories for crystal lang
 
 ## Installation
 
@@ -18,22 +18,58 @@ MongoDB ODM for Crystal
 
 ```crystal
 require "glassy-mongo-odm"
-```
 
-TODO: Write usage instructions here
+include Glassy::MongoODM::Annotations
+
+@[ODM::Document]
+class User
+  @[ODM::Id]
+  property id : BSON::ObjectId?
+
+  @[ODM::Field(name: "Name")]
+  property name : String
+
+  @[ODM::Field]
+  property birth_date : Time
+
+  @[ODM::Field]
+  property mother : Mother?
+
+  @[ODM::Document]
+  class Mother
+    @[ODM::Field]
+    property name : String?
+  end
+
+  def initialize(@name, @birth_date)
+  end
+end
+
+class UserRepository < Glassy::MongoODM::Repository(User)
+end
+
+conn = Glassy::MongoODM::Connection.new("mongodb://mongo", db_name)
+
+repository = UserRepository.new(conn)
+
+user = User.new(name: "My Name", birth_date: Time.local)
+
+repository.save(user)
+
+```
 
 ## Development
 
-TODO: Write development instructions here
+Always run crystal spec before submiting code
 
 ## Contributing
 
-1. Fork it (<https://github.com/your-github-user/glassy-mongodb-odm/fork>)
-2. Create your feature branch (`git checkout -b my-new-feature`)
+1. Fork it (<https://github.com/glassy-framework/glassy-mongo-odm/fork>)
+2. Create your feature branch (`git checkout -b feature/my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
+4. Push to the branch (`git push origin feature/my-new-feature`)
 5. Create a new Pull Request
 
 ## Contributors
 
-- [your-name-here](https://github.com/your-github-user) - creator and maintainer
+- [Anderson Danilo](https://github.com/andersondanilo) - creator and maintainer
