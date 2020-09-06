@@ -4,7 +4,7 @@ jobs:
     docker:
       - image: crystallang/crystal:latest
         environment:
-          MONGO_HOST: localhost
+          MONGO_HOST: mongodb://localhost
       - image: mongo:4.2-bionic
         environment:
           RS: rs

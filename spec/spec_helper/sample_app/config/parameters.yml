@@ -1,0 +1,4 @@
+parameters:
+  db:
+    server: '%env(MONGO_HOST, mongodb://mongo)%'
+    default_database: 'test'

@@ -5,6 +5,14 @@ authors:
   - Anderson Danilo <contato@andersondanilo.com>
 
 dependencies:
+  glassy-kernel:
+    github: glassy-framework/glassy-kernel
+    branch: master
+
+  glassy-console:
+    github: glassy-framework/glassy-console
+    branch: master
+
   mongo:
     github: kimvex/mongodb-crystal
     branch: master
