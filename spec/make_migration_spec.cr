@@ -35,7 +35,7 @@ describe Glassy::MongoODM::Commands::MakeMigration do
       file_suffix = Time.utc.to_unix
       output.items.should eq [
         "Created src/bundles/app_bundle/migrations/my_name_#{file_suffix}.cr",
-        "Dont forget to require all migrations files"
+        "Dont forget to require all migrations files",
       ]
 
       content = File.read("src/bundles/app_bundle/migrations/my_name_#{file_suffix}.cr")
@@ -45,14 +45,6 @@ describe Glassy::MongoODM::Commands::MakeMigration do
       class MyName#{file_suffix} < Glassy::MongoODM::Migration
         def up
           # use @connection : Glassy::MongoODM::Connection
-        end
-
-        def name : String
-          "my_name_#{file_suffix}"
-        end
-
-        def created_at : Time
-          Time.unix #{file_suffix}
         end
       end
       END

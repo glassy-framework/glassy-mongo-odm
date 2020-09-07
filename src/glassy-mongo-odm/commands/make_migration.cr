@@ -45,14 +45,6 @@ module Glassy::MongoODM::Commands
         def up
           # use @connection : Glassy::MongoODM::Connection
         end
-
-        def name : String
-          "#{utils.create_file_name(name, time).sub(".cr", "")}"
-        end
-
-        def created_at : Time
-          Time.unix #{time.to_unix}
-        end
       end
       END
 
