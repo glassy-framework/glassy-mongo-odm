@@ -15,7 +15,7 @@ services:
       - command
 
   migrate_command:
-    class: Glassy::MongoODM::Commands::MakeMigration
+    class: Glassy::MongoODM::Commands::Migrate
     kwargs:
       input: '@console_input'
       output: '@console_output'
