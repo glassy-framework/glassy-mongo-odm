@@ -63,8 +63,16 @@ module Glassy::MongoODM
       })
     end
 
+    def find_by_id(id : String) : EntityClass?
+      find_by_id(BSON::ObjectId.new(id))
+    end
+
     def find_by_id(id : BSON::ObjectId) : EntityClass?
       find_one_by({"_id" => id})
+    end
+
+    def find_by_id!(id : String) : EntityClass
+      find_by_id!(BSON::ObjectId.new(id))
     end
 
     def find_by_id!(id : BSON::ObjectId) : EntityClass
