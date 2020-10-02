@@ -1,5 +1,7 @@
 # glassy-mongo-odm
 
+[![CircleCI](https://circleci.com/gh/glassy-framework/glassy-mongo-odm.svg?style=svg)](https://circleci.com/gh/glassy-framework/glassy-mongo-odm)
+
 Mongo ODM (Object Document Mapper) with repositories for crystal lang
 
 ## Installation
