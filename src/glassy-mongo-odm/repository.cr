@@ -57,6 +57,10 @@ module Glassy::MongoODM
       end
     end
 
+    def remove(id : String) : Void
+      remove(BSON::ObjectId.new(id))
+    end
+
     def remove(id : BSON::ObjectId) : Void
       collection.remove({
         "_id" => id,
