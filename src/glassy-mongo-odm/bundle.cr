@@ -1,6 +1,5 @@
 require "glassy-kernel"
 
-
 module Glassy::MongoODM
   class Bundle < Glassy::Kernel::Bundle
     SERVICES_PATH = "#{__DIR__}/config/services.yml"
@@ -8,7 +7,7 @@ module Glassy::MongoODM
     HAS_CONTAINER_EXT = true
 
     macro apply_container_ext(all_bundles)
-      def migration_list : Array(Glassy::MongoODM::Migration)
+      def db_migration_list(context : Glassy::Kernel::Context? = nil) : Array(Glassy::MongoODM::Migration)
         [
           {% for bundle in all_bundles %}
             {% if migration_path = bundle.resolve.constant("MIGRATIONS_PATH") %}

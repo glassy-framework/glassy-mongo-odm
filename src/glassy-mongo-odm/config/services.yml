@@ -1,30 +1,30 @@
 services:
-  db_connection:
+  db.connection:
     class: Glassy::MongoODM::Connection
     kwargs:
       conn_string: '%db.server:String%'
       default_database: '%db.default_database:String%'
 
-  make_migration_command:
+  db.make_migration_command:
     class: Glassy::MongoODM::Commands::MakeMigration
     kwargs:
-      input: '@console_input'
-      output: '@console_output'
+      input: '@console.input'
+      output: '@console.output'
       kernel: '@kernel'
     tag:
-      - command
+      - console.command
 
-  migrate_command:
+  db.migrate_command:
     class: Glassy::MongoODM::Commands::Migrate
     kwargs:
-      input: '@console_input'
-      output: '@console_output'
+      input: '@console.input'
+      output: '@console.output'
       container: '@container'
-      repository: '@migration_repository'
+      repository: '@db.migration_repository'
     tag:
-      - command
+      - console.command
 
-  migration_repository:
+  db.migration_repository:
     class: Glassy::MongoODM::MigrationRepository
     kwargs:
-      connection: '@db_connection'
+      connection: '@db.connection'
