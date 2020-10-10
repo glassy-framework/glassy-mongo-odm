@@ -1,6 +1,7 @@
 services:
   db.connection:
     class: Glassy::MongoODM::Connection
+    singleton: true
     kwargs:
       conn_string: '%db.server:String%'
       default_database: '%db.default_database:String%'
