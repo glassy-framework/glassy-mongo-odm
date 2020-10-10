@@ -9,7 +9,7 @@ describe Glassy::MongoODM::Commands::Migrate do
       output = Glassy::Console::ArrayOutput.new
       kernel = AppKernel.new
 
-      repository = kernel.container.migration_repository
+      repository = kernel.container.db_migration_repository
 
       command = Glassy::MongoODM::Commands::Migrate.new(
         input,
@@ -29,7 +29,7 @@ describe Glassy::MongoODM::Commands::Migrate do
         "my_name_1: migrated with success",
       ]
 
-      repository.find_all.map{|m| m.name}.to_a.should eq ["my_name_0", "my_name_1"]
+      repository.find_all.map { |m| m.name }.to_a.should eq ["my_name_0", "my_name_1"]
 
       output.clear
 
