@@ -20,7 +20,7 @@ module Glassy::MongoODM::Commands
     def execute
       executed_migrations = @repository.find_all.map { |m| m.name }.to_a
 
-      @container.migration_list.sort_by { |m| m.created_at.as(Time) }.each do |migration|
+      @container.db_migration_list.sort_by { |m| m.created_at.as(Time) }.each do |migration|
         if executed_migrations.includes? migration.name
           output.writeln("#{migration.name}: already migrated")
         else
