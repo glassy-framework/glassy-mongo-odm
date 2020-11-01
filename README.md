@@ -4,6 +4,13 @@
 
 Mongo ODM (Object Document Mapper) with repositories for crystal lang
 
+## TODO
+- [x] Serialize & Deserialize
+- [ ] Connection Pool
+- [ ] Thread Safety
+
+Currently, in the container, we are creating several instances
+
 ## Installation
 
 1. Add the dependency to your `shard.yml`:
